@@ -61,21 +61,27 @@ export const TaskViewSwitcher = ({
     >
       <div className="h-full flex flex-col overflow-auto p-4">
         <div className="flex flex-col gap-y-2 lg:flex-row justify-between items-center">
-          <TabsList className="w-full lg:w-auto">
-            <TabsTrigger className="h-8 w-full lg:w-auto" value="table">
-              Table
-            </TabsTrigger>
-            <TabsTrigger className="h-8 w-full lg:w-auto" value="kanban">
-              Kanban
-            </TabsTrigger>
-            <TabsTrigger className="h-8 w-full lg:w-auto" value="calendar">
-              Calendar
-            </TabsTrigger>
-          </TabsList>
-          <Button onClick={open} size="sm" className="w-full lg:w-auto">
-            <PlusIcon className="size-4 mr-2" />
-            New
-          </Button>
+        <TabsList className="flex w-full lg:w-auto">
+    <TabsTrigger className="h-8 w-full lg:w-auto" value="table">
+      Table
+    </TabsTrigger>
+    <TabsTrigger className="h-8 w-full lg:w-auto" value="kanban">
+      Kanban
+    </TabsTrigger>
+    <TabsTrigger className="h-8 w-full lg:w-auto" value="calendar">
+      Calendar
+    </TabsTrigger>
+  </TabsList>
+  <div className="flex space-x-2">
+    <Button onClick={open} size="sm" className="w-full lg:w-auto">
+      <PlusIcon className="size-4 mr-2" />
+      New Task (AI)
+    </Button>
+    <Button onClick={open} size="sm" className="w-full lg:w-auto">
+      <PlusIcon className="size-4 mr-2" />
+      New
+    </Button>
+  </div>
         </div>
         <DottedSeparator className="my-4" />
         <DataFilters hideProjectFilter={hideProjectFilter} />
