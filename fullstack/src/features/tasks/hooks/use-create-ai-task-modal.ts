@@ -1,18 +1,17 @@
-import { useQueryState, parseAsBoolean } from "nuqs";
+import { create } from "zustand";
 
-export const useCreateAITaskModal = () => {
-  const [isOpen, setIsOpen] = useQueryState(
-    "create-task-ai",
-    parseAsBoolean.withDefault(false).withOptions({ clearOnDefault: true })
-  );
+interface CreateAITaskModalStore {
+  isOpen: boolean;
+  open: () => void;
+  close: () => void;
+}
 
-  const open = () => setIsOpen(true);
-  const close = () => setIsOpen(false);
-
-  return {
-    isOpen,
-    open,
-    close,
-    setIsOpen,
-  };
-};
+export const useCreateAITaskModal = create<CreateAITaskModalStore>((set) => ({
+  isOpen: false,
+  open: () => {
+    set({ isOpen: true });
+  },
+  close: () => {
+    set({ isOpen: false });
+  },
+}));

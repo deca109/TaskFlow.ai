@@ -19,6 +19,7 @@ import { DataTable } from "./data-table";
 
 import { useGetTasks } from "../api/use-get-tasks";
 import { useCreateTaskModal } from "../hooks/use-create-task-modal";
+import { useCreateAITaskModal } from "../hooks/use-create-ai-task-modal";
 import { useTaskFilters } from "../hooks/use-task-filters";
 import { TaskStatus } from "../types";
 import { useBulkUpdateTasks } from "../api/use-bulk-update-tasks";
@@ -52,6 +53,7 @@ export const TaskViewSwitcher = ({
   );
 
   const { open } = useCreateTaskModal();
+  const { open: openAI } = useCreateAITaskModal();
 
   return (
     <Tabs
@@ -73,14 +75,15 @@ export const TaskViewSwitcher = ({
     </TabsTrigger>
   </TabsList>
   <div className="flex space-x-2">
-    <Button onClick={open} size="sm" className="w-full lg:w-auto">
-      <PlusIcon className="size-4 mr-2" />
-      New Task (AI)
-    </Button>
-    <Button onClick={open} size="sm" className="w-full lg:w-auto">
-      <PlusIcon className="size-4 mr-2" />
-      New
-    </Button>
+  <Button onClick={open} size="sm" className="w-full lg:w-auto">
+  <PlusIcon className="size-4 mr-2" />
+  New
+</Button>
+<Button onClick={openAI} size="sm" className="w-full lg:w-auto">
+  <PlusIcon className="size-4 mr-2" />
+  New Task (AI)
+</Button>
+
   </div>
         </div>
         <DottedSeparator className="my-4" />
