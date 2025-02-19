@@ -7,6 +7,10 @@ from sklearn.ensemble import RandomForestClassifier
 
 app = Flask(__name__)
 
+@app.route('/')
+def home():
+    return "Welcome to TaskFlow.ai Backend!"
+
 # Load datasets
 employees = pd.read_csv("Data/Employees.csv")
 tasks = pd.read_csv("Data/Tasks.csv")
