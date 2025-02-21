@@ -9,6 +9,7 @@ const LoadingSpinner = () => (
     <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
   </div>
 );
+
 const TaskAssignment = () => {
   const [taskHistory, setTaskHistory] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -265,7 +266,7 @@ const TaskAssignment = () => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-gray-50 rounded-lg shadow-lg">
+    <div className="w-[90%] mx-auto p-6 bg-gray-50 rounded-lg shadow-lg">
       <h2 className="text-4xl font-bold text-gray-900 mb-6 text-center">
         Task Assignment
       </h2>
@@ -399,33 +400,59 @@ const TaskAssignment = () => {
           </form>
         </div>
       ) : (
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="mb-4 overflow-x-auto">
-            <table className="w-full border border-gray-200 rounded-lg">
-              <thead>
-                <tr className="bg-gray-100 text-gray-700">
-                  <th className="px-4 py-2 text-left">Task ID</th>
-                  <th className="px-4 py-2 text-left">Employee ID</th>
-                  <th className="px-4 py-2 text-left">Assigned Date</th>
-                  <th className="px-4 py-2 text-left">Completed Date</th>
-                  <th className="px-4 py-2 text-left">Completion Time</th>
-                  <th className="px-4 py-2 text-left">Feedback Score</th>
-                  <th className="px-4 py-2 text-left">Actions</th>
+        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Task ID
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Employee ID
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Assigned Date
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Completed Date
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Completion Time
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Feedback Score
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="bg-white divide-y divide-gray-200">
                 {taskHistory.map((task) => (
-                  <tr key={task.id} className="border-t border-gray-200 hover:bg-gray-50">
-                    <td className="px-4 py-2">{task.Task_ID}</td>
-                    <td className="px-4 py-2">{task.Employee_ID}</td>
-                    <td className="px-4 py-2">{task.Assigned_Date}</td>
-                    <td className="px-4 py-2">{task.Completed_Date || '-'}</td>
-                    <td className="px-4 py-2">{task.Completion_Time || '-'}</td>
-                    <td className="px-4 py-2">{task.Feedback_Score || '-'}</td>
-                    <td className="px-4 py-2">
+                  <tr key={task.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      {task.Task_ID}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {task.Employee_ID}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {task.Assigned_Date}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {task.Completed_Date || '-'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {task.Completion_Time || '-'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {task.Feedback_Score || '-'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                       <button
                         onClick={() => handleEdit(task)}
-                        className="px-3 py-1 bg-indigo-100 text-indigo-600 rounded hover:bg-indigo-200 transition-colors"
+                        className="text-indigo-600 hover:text-indigo-900"
                       >
                         Edit
                       </button>
@@ -436,7 +463,7 @@ const TaskAssignment = () => {
             </table>
           </div>
           <button
-            className="w-full bg-indigo-600 text-white font-semibold py-3 rounded-lg hover:bg-indigo-700 transition-colors focus:ring-2 focus:ring-indigo-500"
+            className="mt-4 w-full bg-indigo-600 text-white font-semibold py-3 rounded-lg hover:bg-indigo-700 transition-colors focus:ring-2 focus:ring-indigo-500"
             onClick={handleNewTaskAssignment}
           >
             New Task Assignment
