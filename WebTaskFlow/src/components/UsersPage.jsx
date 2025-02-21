@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import NewUserPage from "./NewUserPage"; 
 import { motion } from "framer-motion"; 
+import * as XLSX from 'xlsx';
 
 const LoadingSpinner = () => (
   <div className="flex items-center justify-center min-h-[400px]">
@@ -22,6 +23,7 @@ const containerVariants = {
 const UsersPage = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [uploadStatus, setUploadStatus] = useState("");
 
   const fetchUsers = async () => {
     try {
@@ -54,6 +56,52 @@ const UsersPage = () => {
     }
   };
 
+  const handleFileUpload = async (event) => {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+
+    reader.onload = async (e) => {
+      try {
+        const workbook = XLSX.read(e.target.result, { type: 'binary' });
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+        const data = XLSX.utils.sheet_to_json(worksheet);
+
+
+        const existingEmployees = await axios.get("http://localhost:5000/get_employee");
+        const existingIds = new Set(existingEmployees.data.map(emp => emp.Employee_ID));
+
+
+        const newEmployees = data.filter(emp => !existingIds.has(parseInt(emp.Employee_ID)));
+
+        if (newEmployees.length === 0) {
+          setUploadStatus('No new users to add. All Employee IDs already exist.');
+          return;
+        }
+
+        const formattedData = newEmployees.map(row => ({
+          Employee_ID: parseInt(row.Employee_ID),
+          Name: row.Name,
+          Role: row.Role,
+          Skills: row.Skills,
+          Experience: parseInt(row.Experience),
+          Availability: parseInt(row.Availability),
+          Current_Workload: parseInt(row.Current_Workload),
+          Performance_Score: parseInt(row.Performance_Score)
+        }));
+
+        const response = await axios.post('http://localhost:5000/add_employee', formattedData);
+        setUploadStatus(`Successfully added ${newEmployees.length} new users. ${data.length - newEmployees.length} users skipped due to existing IDs.`);
+        fetchUsers();
+      } catch (error) {
+        console.error('Error uploading file:', error);
+        setUploadStatus('Error uploading users. Please check the file format.');
+      }
+    };
+
+    reader.readAsBinaryString(file);
+  };
+
   if (loading) return <LoadingSpinner />;
 
   return (
@@ -65,17 +113,44 @@ const UsersPage = () => {
     >
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-gray-900">Users</h2>
-        {users.length > 0 && (
+        <div className="flex gap-4">
           <motion.div whileTap={{ scale: 0.95 }}>
-            <Link
-              to="/users/new"
-              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            <input
+              type="file"
+              accept=".xlsx,.xls"
+              onChange={handleFileUpload}
+              className="hidden"
+              id="fileUpload"
+            />
+            <label
+              htmlFor="fileUpload"
+              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
             >
-              Create New User
-            </Link>
+              Upload Excel
+            </label>
           </motion.div>
-        )}
+          {users.length > 0 && (
+            <motion.div whileTap={{ scale: 0.95 }}>
+              <Link
+                to="/users/new"
+                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+              >
+                Create New User
+              </Link>
+            </motion.div>
+          )}
+        </div>
       </div>
+      
+      {uploadStatus && (
+        <div className={`mb-4 p-4 rounded-lg ${
+          uploadStatus.includes('Error') 
+            ? 'bg-red-100 text-red-700' 
+            : 'bg-green-100 text-green-700'
+        }`}>
+          {uploadStatus}
+        </div>
+      )}
 
       {users.length === 0 ? (
         <div className="space-y-8">
