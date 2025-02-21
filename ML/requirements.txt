@@ -1,0 +1,9 @@
+pandas
+flask
+flask-cors
+flask-sqlalchemy
+numpy
+tensorflow
+scikit-learn
+matplotlib
+imbalanced-learn
