@@ -61,7 +61,8 @@ export default function App() {
       <div className="flex min-h-screen bg-gray-50">
         <aside className="w-64 bg-white shadow-lg">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h1 className="text-xl font-bold text-gray-800">
+            <h1 className="flex items-center text-xl font-bold text-gray-800">
+              <img src="../public/logo.svg" alt="Logo" className="h-6 w-auto mr-2" />
               TaskFlow.ai{" "}
               <span className="text-xs font-medium text-indigo-600 ml-1">
                 v0.1
@@ -144,26 +145,29 @@ export default function App() {
                 <div className="space-y-3 text-gray-600">
                   <p>
                     Start by creating a new project. Navigate to the{" "}
-                    <span className="font-medium">Users</span> page to add team members
-                    with their skills and roles.
+                    <span className="font-medium">Users</span> page to add team
+                    members with their skills and roles.
                   </p>
                   <p>
-                    Go to the <span className="font-medium">Tasks</span> page to create
-                    new tasks with required skills and estimated completion time.
+                    Go to the <span className="font-medium">Tasks</span> page to
+                    create new tasks with required skills and estimated
+                    completion time.
                   </p>
                   <p>
-                    Use the <span className="font-medium">Task Assignment</span> page to
-                    assign tasks to team members. The system will recommend the best
-                    employee based on skills and workload.
+                    Use the <span className="font-medium">Task Assignment</span>{" "}
+                    page to assign tasks to team members. The system will
+                    recommend the best employee based on skills and workload.
                   </p>
                   <p>
                     You can track project progress and view statistics in the{" "}
-                    <span className="font-medium">Project Overview</span> dashboard.
+                    <span className="font-medium">Project Overview</span>{" "}
+                    dashboard.
                   </p>
                   <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
                     <p className="text-sm text-yellow-800">
-                      <span className="font-medium">Note:</span> You must create at least one user before creating tasks, 
-                      and have at least one task created before using the task assignment feature.
+                      <span className="font-medium">Note:</span> You must create
+                      at least one user before creating tasks, and have at least
+                      one task created before using the task assignment feature.
                     </p>
                   </div>
                 </div>
