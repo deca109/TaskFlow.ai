@@ -365,7 +365,6 @@ const TaskAssignment = () => {
         </div>
       )}
 
-      {/* NEW TASK ASSIGNMENT or NO TASKS */}
       {!isEditing && (isNewTask || taskHistory.length === 0) && (
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
           <h3 className="text-xl font-semibold text-gray-800 mb-4">
@@ -431,78 +430,82 @@ const TaskAssignment = () => {
         </div>
       )}
 
-      {/* SHOW TABLE IF TASKS EXIST AND NOT IN "NEW TASK" MODE */}
+
       {!isEditing && !isNewTask && taskHistory.length > 0 && (
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Task ID
-                  </th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Employee ID
-                  </th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Assigned Date
-                  </th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Completed Date
-                  </th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Completion Time
-                  </th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Feedback Score (1-5)
-                  </th>
-                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {taskHistory.map((task) => (
-                  <tr key={task.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 text-center whitespace-nowrap text-sm font-medium text-gray-900">
-                      {task.Task_ID}
-                    </td>
-                    <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
-                      {task.Employee_ID}
-                    </td>
-                    <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
-                      {task.Assigned_Date}
-                    </td>
-                    <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
-                      {task.Completed_Date || "-"}
-                    </td>
-                    <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
-                      {task.Completion_Time || "-"}
-                    </td>
-                    <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
-                      {task.Feedback_Score || "-"}
-                    </td>
-                    <td className="px-6 py-4 text-center whitespace-nowrap text-sm font-medium">
-                      <button
-                        onClick={() => handleEdit(task)}
-                        className="text-indigo-600 hover:text-indigo-900"
-                      >
-                        Edit
-                      </button>
-                    </td>
+        <>
+          <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Task ID
+                    </th>
+                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Employee ID
+                    </th>
+                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Assigned Date
+                    </th>
+                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Completed Date
+                    </th>
+                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Completion Time
+                    </th>
+                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Feedback Score (1-5)
+                    </th>
+                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {taskHistory.map((task) => (
+                    <tr key={task.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm font-medium text-gray-900">
+                        {task.Task_ID}
+                      </td>
+                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
+                        {task.Employee_ID}
+                      </td>
+                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
+                        {task.Assigned_Date}
+                      </td>
+                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
+                        {task.Completed_Date || "-"}
+                      </td>
+                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
+                        {task.Completion_Time || "-"}
+                      </td>
+                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
+                        {task.Feedback_Score || "-"}
+                      </td>
+                      <td className="px-6 py-4 text-center whitespace-nowrap text-sm font-medium">
+                        <button
+                          onClick={() => handleEdit(task)}
+                          className="text-indigo-600 hover:text-indigo-900"
+                        >
+                          Edit
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-          <motion.button
-            whileTap={{ scale: 0.95 }}
-            className="mt-4 w-full px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-            onClick={handleNewTaskAssignment}
-          >
-            New Task Assignment
-          </motion.button>
-        </div>
+          <div className="mt-6">
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              className="w-full px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+              onClick={handleNewTaskAssignment}
+            >
+              New Task Assignment
+            </motion.button>
+          </div>
+        </>
       )}
     </motion.div>
   );
