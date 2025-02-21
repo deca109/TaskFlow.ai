@@ -347,7 +347,7 @@ const TaskAssignment = () => {
             type="number"
             value={feedbackScore}
             onChange={(e) => {
-              const value = Math.min(Math.max(parseInt(e.target.value) || 1, 1), 5);
+              const value = Math.min(Math.max(parseInt(e.target.value), 1), 5);
               setFeedbackScore(value);
             }}
             min="1"
