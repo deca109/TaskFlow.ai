@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Select from "react-select";
+import { motion } from "framer-motion";
 import "../App.css";
 
 const LoadingSpinner = () => (
@@ -75,13 +76,11 @@ const TaskAssignment = () => {
     ])
       .then(([taskRes, empRes]) => {
         setTaskHistory(taskRes.data);
-        
         const workloads = {};
         empRes.data.forEach(emp => {
           workloads[emp.Employee_ID] = emp.Current_Workload || 0;
         });
         setEmployeeWorkloads(workloads);
-        
         setEmployees(empRes.data.map(emp => ({
           value: emp.Employee_ID,
           label: emp.Name
@@ -99,7 +98,6 @@ const TaskAssignment = () => {
       alert("Please enter a Task ID first");
       return;
     }
-
     axios
       .get(`http://localhost:5000/recommend_employee/${taskID}`)
       .then((res) => {
@@ -107,10 +105,8 @@ const TaskAssignment = () => {
           alert(res.data.message);
           return;
         }
-
         const employeeId = res.data.Best_Employee.Employee_ID;
         const employee = employees.find((emp) => emp.value === employeeId);
-
         if (employee) {
           const recommended = {
             value: employeeId,
@@ -124,9 +120,7 @@ const TaskAssignment = () => {
       })
       .catch((error) => {
         console.error("Error recommending employee:", error);
-        alert(
-          "Error recommending employee. Please check if the Task ID exists."
-        );
+        alert("Error recommending employee. Please check if the Task ID exists.");
       });
   };
 
@@ -135,40 +129,33 @@ const TaskAssignment = () => {
       alert("Please enter a Task ID");
       return;
     }
-
     if (isTaskAlreadyAssigned(taskID)) {
       alert("This Task ID is already assigned to another employee!");
       setTaskID("");
       return;
     }
-
     const selectedEmployeeId = selectedEmployee?.value || recommendedEmployee?.value;
     if (!selectedEmployeeId) {
       alert("Please select an employee");
       return;
     }
-
     axios.get(`http://localhost:5000/get_task/${taskID}`)
       .then((taskRes) => {
         if (!taskRes.data) {
           alert("Task ID does not exist!");
           return;
         }
-
         const taskDetails = taskRes.data;
         const estimatedHours = taskDetails.Estimated_Time || 0;
         const workloadIncrease = calculateWorkloadPerWeek(estimatedHours);
-        
         const taskHistoryData = {
           Employee_ID: selectedEmployeeId,
           Task_ID: parseInt(taskID),
           Assigned_Date: new Date().toISOString().split("T")[0]
         };
-
         const workloadData = {
           Current_Workload: (employeeWorkloads[selectedEmployeeId] || 0) + workloadIncrease
         };
-
         Promise.all([
           axios.post("http://localhost:5000/add_task_history", taskHistoryData),
           axios.put(`http://localhost:5000/update_employee/${selectedEmployeeId}`, workloadData)
@@ -220,7 +207,6 @@ const TaskAssignment = () => {
 
   const handleUpdate = () => {
     if (!editTaskID || !selectedEmployee) return;
-
     const data = {
       Employee_ID: selectedEmployee.value,
       Task_ID: editTaskID,
@@ -228,7 +214,6 @@ const TaskAssignment = () => {
       Completion_Time: completionTime || calculateCompletionTime(assignedDate, completedDate),
       Feedback_Score: feedbackScore,
     };
-
     axios
       .put(`http://localhost:5000/update_task_history/${taskHistoryId}`, data)
       .then(() => {
@@ -263,143 +248,61 @@ const TaskAssignment = () => {
   }
 
   return (
-    <div className="w-[90%] mx-auto p-6 bg-gray-50 rounded-lg shadow-lg">
-      <h2 className="text-4xl font-bold text-gray-900 mb-6 text-center">
-        Task Assignment
-      </h2>
+    <motion.div className="w-[90%] mx-auto p-6 bg-gray-50 rounded-lg shadow-lg text-center" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+      <h2 className="text-4xl font-bold text-gray-900 mb-6">Task Assignment</h2>
       {isEditing ? (
         <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-2xl font-semibold text-gray-800 mb-4">
-            Edit Assigned Task
-          </h3>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Select Employee
-          </label>
-          <Select
-            options={employees}
-            value={selectedEmployee}
-            onChange={setSelectedEmployee}
-            placeholder="Select Employee"
-            styles={customStyles}
-            isDisabled={true}
-            className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500"
-          />
-          <label className="block text-sm font-medium text-gray-700 mt-4 mb-2">
-            Completed Date
-          </label>
-          <input
-            type="date"
-            value={completedDate}
-            onChange={(e) => {
-              const newCompletedDate = e.target.value;
-              setCompletedDate(newCompletedDate);
-              // Only update completion time if not manually set
-              if (!completionTime) {
-                const hours = calculateCompletionTime(
-                  assignedDate,
-                  newCompletedDate
-                );
-                setCompletionTime(hours);
-              }
-            }}
-            className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500"
-          />
-          <label className="block text-sm font-medium text-gray-700 mt-4 mb-2">
-            Completion Time (Hours)
-          </label>
+          <h3 className="text-2xl font-semibold text-gray-800 mb-4">Edit Assigned Task</h3>
+          <label className="block text-sm font-medium text-gray-700 mb-2">Select Employee</label>
+          <Select options={employees} value={selectedEmployee} onChange={setSelectedEmployee} placeholder="Select Employee" styles={customStyles} isDisabled={true} className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500" />
+          <label className="block text-sm font-medium text-gray-700 mt-4 mb-2">Completed Date</label>
+          <input type="date" value={completedDate} onChange={(e) => {
+            const newCompletedDate = e.target.value;
+            setCompletedDate(newCompletedDate);
+            if (!completionTime) {
+              const hours = calculateCompletionTime(assignedDate, newCompletedDate);
+              setCompletionTime(hours);
+            }
+          }} className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500" />
+          <label className="block text-sm font-medium text-gray-700 mt-4 mb-2">Completion Time (Hours)</label>
           <div className="flex items-center space-x-2">
-            <input
-              type="number"
-              value={completionTime}
-              onChange={(e) => {
-                const newHours = parseInt(e.target.value) || 0;
-                setCompletionTime(newHours);
-                if (assignedDate) {
-                  const newCompletedDate = adjustDateByHours(
-                    assignedDate,
-                    newHours
-                  );
-                  setCompletedDate(newCompletedDate);
-                }
-              }}
-              className="w-24 border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500"
-              min="0"
-              step="1"
-            />
+            <input type="number" value={completionTime} onChange={(e) => {
+              const newHours = parseInt(e.target.value) || 0;
+              setCompletionTime(newHours);
+              if (assignedDate) {
+                const newCompletedDate = adjustDateByHours(assignedDate, newHours);
+                setCompletedDate(newCompletedDate);
+              }
+            }} className="w-24 border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500" min="0" step="1" />
             <span className="text-gray-600">hours</span>
           </div>
-          <label className="block text-sm font-medium text-gray-700 mt-4 mb-2">
-            Feedback Score (1-5)
-          </label>
-          <input
-            type="number"
-            value={feedbackScore}
-            onChange={(e) => {
-              const value = Math.min(Math.max(parseInt(e.target.value) || 1, 1), 5);
-              setFeedbackScore(value);
-            }}
-            min="1"
-            max="5"
-            className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500"
-          />
-          <button
-            className="w-full mt-6 bg-indigo-600 text-white font-semibold py-3 rounded-lg hover:bg-indigo-700 transition-colors focus:ring-2 focus:ring-indigo-500"
-            onClick={handleUpdate}
-          >
+          <label className="block text-sm font-medium text-gray-700 mt-4 mb-2">Feedback Score (1-5)</label>
+          <input type="number" value={feedbackScore} onChange={(e) => {
+            const value = Math.min(Math.max(parseInt(e.target.value) || 1, 1), 5);
+            setFeedbackScore(value);
+          }} min="1" max="5" className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500" />
+          <button className="w-full mt-6 bg-indigo-600 text-white font-semibold py-3 rounded-lg hover:bg-indigo-700 transition-colors focus:ring-2 focus:ring-indigo-500" onClick={handleUpdate}>
             Update Task
           </button>
         </div>
       ) : isNewTask || taskHistory.length === 0 ? (
         <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-2xl font-semibold text-gray-800 mb-4">
-            {isNewTask ? "New Task Assignment" : "No tasks assigned yet."}
-          </h3>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleAssign();
-            }}
-            className="space-y-4"
-          >
-            <label className="block text-sm font-medium text-gray-700">
-              Task ID
-            </label>
-            <input
-              type="text"
-              name="taskID"
-              value={taskID}
-              onChange={(e) => setTaskID(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500"
-              required
-            />
-            <label className="block text-sm font-medium text-gray-700">
-              Select Employee
-            </label>
-            <Select
-              options={employees}
-              value={selectedEmployee}
-              onChange={setSelectedEmployee}
-              placeholder="Select Employee"
-              styles={customStyles}
-              className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500"
-            />
-            <button
-              type="button"
-              className="w-full bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300 transition-colors focus:ring-2 focus:ring-gray-500"
-              onClick={handleRecommend}
-            >
+          <h3 className="text-2xl font-semibold text-gray-800 mb-4">{isNewTask ? "New Task Assignment" : "No tasks assigned yet."}</h3>
+          <form onSubmit={(e) => {
+            e.preventDefault();
+            handleAssign();
+          }} className="space-y-4">
+            <label className="block text-sm font-medium text-gray-700">Task ID</label>
+            <input type="text" name="taskID" value={taskID} onChange={(e) => setTaskID(e.target.value)} className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500" required />
+            <label className="block text-sm font-medium text-gray-700">Select Employee</label>
+            <Select options={employees} value={selectedEmployee} onChange={setSelectedEmployee} placeholder="Select Employee" styles={customStyles} className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500" />
+            <button type="button" className="w-full bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300 transition-colors focus:ring-2 focus:ring-gray-500" onClick={handleRecommend}>
               Recommend Employee
             </button>
             {recommendedEmployee && (
-              <p className="text-gray-700 text-center mt-2">
-                Recommended Employee: {recommendedEmployee.label}
-              </p>
+              <p className="text-gray-700 text-center mt-2">Recommended Employee: {recommendedEmployee.label}</p>
             )}
-            <button
-              type="submit"
-              className="w-full bg-indigo-600 text-white font-semibold py-3 rounded-lg hover:bg-indigo-700 transition-colors focus:ring-2 focus:ring-indigo-500"
-              disabled={!selectedEmployee}
-            >
+            <button type="submit" className="w-full bg-indigo-600 text-white font-semibold py-3 rounded-lg hover:bg-indigo-700 transition-colors focus:ring-2 focus:ring-indigo-500" disabled={!selectedEmployee}>
               Assign Task
             </button>
           </form>
@@ -410,72 +313,38 @@ const TaskAssignment = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Task ID
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Employee ID
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Assigned Date
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Completed Date
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Completion Time
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Feedback Score (1-5)
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Task ID</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employee ID</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assigned Date</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Completed Date</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Completion Time</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Feedback Score (1-5)</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {taskHistory.map((task) => (
                   <tr key={task.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {task.Task_ID}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {task.Employee_ID}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {task.Assigned_Date}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {task.Completed_Date || '-'}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {task.Completion_Time || '-'}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {task.Feedback_Score || '-'}
-                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{task.Task_ID}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{task.Employee_ID}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{task.Assigned_Date}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{task.Completed_Date || '-'}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{task.Completion_Time || '-'}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{task.Feedback_Score || '-'}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                      <button
-                        onClick={() => handleEdit(task)}
-                        className="text-indigo-600 hover:text-indigo-900"
-                      >
-                        Edit
-                      </button>
+                      <button onClick={() => handleEdit(task)} className="text-indigo-600 hover:text-indigo-900">Edit</button>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-          <button
-            className="mt-4 w-full bg-indigo-600 text-white font-semibold py-3 rounded-lg hover:bg-indigo-700 transition-colors focus:ring-2 focus:ring-indigo-500"
-            onClick={handleNewTaskAssignment}
-          >
+          <motion.button whileTap={{ scale: 0.95 }} className="mt-4 w-full bg-indigo-600 text-white font-semibold py-3 rounded-lg hover:bg-indigo-700 transition-colors focus:ring-2 focus:ring-indigo-500" onClick={handleNewTaskAssignment}>
             New Task Assignment
-          </button>
+          </motion.button>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 };
 

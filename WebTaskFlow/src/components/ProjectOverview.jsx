@@ -1,13 +1,32 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
+import NewUserPage from "./NewUserPage";
+import { motion } from "framer-motion";
+
+const LoadingSpinner = () => (
+  <div className="flex items-center justify-center min-h-[400px]">
+    <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+  </div>
+);
+
+const containerVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { 
+    opacity: 1, 
+    y: 0, 
+    transition: { duration: 0.5, when: "beforeChildren", staggerChildren: 0.1 } 
+  }
+};
 
 const StatCard = ({ label, value, bgColor = "bg-white" }) => (
-  <div
+  <motion.div
     className={`${bgColor} rounded-xl shadow-sm p-6 transition-transform hover:scale-105`}
+    whileHover={{ scale: 1.05 }}
   >
-    <p className="text-sm font-medium text-gray-500 mb-1">{label}</p>
-    <p className="text-3xl font-bold text-gray-900">{value}</p>
-  </div>
+    <p className="text-sm font-medium text-gray-500 mb-1 text-center">{label}</p>
+    <p className="text-3xl font-bold text-gray-900 text-center">{value}</p>
+  </motion.div>
 );
 
 export default function ProjectOverview({ projectName }) {
@@ -48,8 +67,11 @@ export default function ProjectOverview({ projectName }) {
   }, []);
 
   const deleteProject = () => {
-    if (window.confirm("Are you sure you want to delete this project? This will clear all data.")) {
-      // Clear all data from different tables
+    if (
+      window.confirm(
+        "Are you sure you want to delete this project? This will clear all data."
+      )
+    ) {
       Promise.all([
         axios.delete("http://localhost:5000/clear_task_history"),
         axios.delete("http://localhost:5000/clear_tasks"),
@@ -67,8 +89,13 @@ export default function ProjectOverview({ projectName }) {
   };
 
   return (
-    <div className="max-w-6xl mx-auto">
-      <div className="mb-8">
+    <motion.div
+      className="max-w-6xl mx-auto"
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+    >
+      <div className="mb-8 text-center">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">{projectName}</h1>
         <p className="text-gray-600">
           An overview of the details of your project are displayed below.
@@ -99,13 +126,14 @@ export default function ProjectOverview({ projectName }) {
       </div>
 
       <div className="flex justify-end">
-        <button
+        <motion.button
+          whileTap={{ scale: 0.95 }}
           onClick={deleteProject}
           className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
         >
           Delete Project
-        </button>
+        </motion.button>
       </div>
-    </div>
+    </motion.div>
   );
 }

@@ -1,13 +1,23 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import NewUserPage from "./NewUserPage"; // Add this import
+import NewUserPage from "./NewUserPage"; 
+import { motion } from "framer-motion"; 
 
 const LoadingSpinner = () => (
   <div className="flex items-center justify-center min-h-[400px]">
     <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
   </div>
 );
+
+const containerVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { 
+    opacity: 1, 
+    y: 0, 
+    transition: { duration: 0.5, when: "beforeChildren", staggerChildren: 0.1 } 
+  }
+};
 
 const UsersPage = () => {
   const [users, setUsers] = useState([]);
@@ -28,8 +38,8 @@ const UsersPage = () => {
     fetchUsers();
   }, []);
 
-  const handleUserAdded = async (newUser) => {
-    await fetchUsers(); // Reload the users list after adding a new user
+  const handleUserAdded = async () => {
+    await fetchUsers(); 
   };
 
   const handleRemove = async (userId) => {
@@ -47,16 +57,23 @@ const UsersPage = () => {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <div className="container mx-auto px-4 py-6">
+    <motion.div
+      className="container mx-auto px-4 py-6"
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+    >
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-gray-900">Users</h2>
         {users.length > 0 && (
-          <Link
-            to="/users/new"
-            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-          >
-            Create New User
-          </Link>
+          <motion.div whileTap={{ scale: 0.95 }}>
+            <Link
+              to="/users/new"
+              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            >
+              Create New User
+            </Link>
+          </motion.div>
         )}
       </div>
 
@@ -73,51 +90,54 @@ const UsersPage = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                     User ID
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Name
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Role
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Skills
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Experience
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Availability
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Workload
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Performance
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {users.map((user) => (
-                  <tr key={user.Employee_ID} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  <motion.tr
+                    key={user.Employee_ID}
+                    className="hover:bg-gray-50"
+                  >
+                    <td className="px-6 py-4 text-center whitespace-nowrap text-sm font-medium text-gray-900">
                       {user.Employee_ID}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
                       {user.Name}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
                       <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">
                         {user.Role}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
-                      <div className="flex flex-wrap gap-1">
+                    <td className="px-6 py-4 text-center text-sm text-gray-500">
+                      <div className="flex flex-wrap justify-center gap-1">
                         {user.Skills.split(",").map((skill, index) => (
                           <span
                             key={index}
@@ -128,19 +148,19 @@ const UsersPage = () => {
                         ))}
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
                       {user.Experience} years
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
                       {user.Availability} hrs
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
                       {user.Current_Workload} %
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
                       {user.Performance_Score}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                    <td className="px-6 py-4 text-center whitespace-nowrap text-sm font-medium space-x-2">
                       <Link
                         to={`/users/${user.Employee_ID}/edit`}
                         className="text-indigo-600 hover:text-indigo-900"
@@ -154,14 +174,14 @@ const UsersPage = () => {
                         Delete
                       </button>
                     </td>
-                  </tr>
+                  </motion.tr>
                 ))}
               </tbody>
             </table>
           </div>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 };
 

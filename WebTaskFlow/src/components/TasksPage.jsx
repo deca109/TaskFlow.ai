@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const LoadingSpinner = () => (
   <div className="flex items-center justify-center min-h-[400px]">
@@ -33,7 +34,7 @@ const TasksPage = () => {
     const colors = {
       High: "bg-red-100 text-red-800",
       Medium: "bg-yellow-100 text-yellow-800",
-      Low: "bg-green-100 text-green-800",
+      Low: "bg-green-100 text-green-800"
     };
     return colors[priority] || "bg-gray-100 text-gray-800";
   };
@@ -43,15 +44,22 @@ const TasksPage = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-6">
+    <motion.div
+      className="container mx-auto px-4 py-6"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-gray-900">Tasks</h2>
-        <Link
-          to="/tasks/new"
-          className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-        >
-          Create New Task
-        </Link>
+        <motion.div whileTap={{ scale: 0.95 }}>
+          <Link
+            to="/tasks/new"
+            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+          >
+            Create New Task
+          </Link>
+        </motion.div>
       </div>
 
       {tasks.length === 0 ? (
@@ -64,25 +72,25 @@ const TasksPage = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Task ID
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Description
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Required Skills
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Priority
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Est. Time
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Complexity
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Is Assigned
                   </th>
                 </tr>
@@ -90,47 +98,38 @@ const TasksPage = () => {
               <tbody className="bg-white divide-y divide-gray-200">
                 {tasks.map((task) => (
                   <tr key={task.Task_ID} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                    <td className="px-6 py-4 text-center text-sm font-medium text-gray-900">
                       {task.Task_ID}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
+                    <td className="px-6 py-4 text-center text-sm text-gray-500">
                       {task.Description}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
-                      <div className="flex flex-wrap gap-1">
+                    <td className="px-6 py-4 text-center text-sm text-gray-500">
+                      <div className="flex flex-wrap justify-center gap-1">
                         {task.Required_Skills.split(",").map((skill, index) => (
-                          <span
-                            key={index}
-                            className="px-2 py-1 bg-indigo-100 text-indigo-800 rounded-full text-xs"
-                          >
+                          <span key={index} className="px-2 py-1 bg-indigo-100 text-indigo-800 rounded-full text-xs">
                             {skill.trim()}
                           </span>
                         ))}
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(
-                          task.Priority
-                        )}`}
-                      >
+                    <td className="px-6 py-4 text-center whitespace-nowrap">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(task.Priority)}`}>
                         {task.Priority}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
                       {task.Estimated_Time}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
                       {task.Task_Complexity}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          taskHistory.some(hist => hist.Task_ID === task.Task_ID)
-                            ? "bg-green-100 text-green-800"
-                            : "bg-red-100 text-red-800"
-                        }`}
-                      >
+                    <td className="px-6 py-4 text-center whitespace-nowrap text-sm">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        taskHistory.some(hist => hist.Task_ID === task.Task_ID)
+                          ? "bg-green-100 text-green-800"
+                          : "bg-red-100 text-red-800"
+                      }`}>
                         {taskHistory.some(hist => hist.Task_ID === task.Task_ID) ? "Yes" : "No"}
                       </span>
                     </td>
@@ -141,7 +140,7 @@ const TasksPage = () => {
           </div>
         </div>
       )}
-    </div>
+    </motion.div>
   );
 };
 
