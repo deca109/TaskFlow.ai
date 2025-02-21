@@ -73,11 +73,11 @@ export default function App() {
               <NavLink to="/" icon={Home}>
                 Project
               </NavLink>
-              <NavLink to="/tasks" icon={CheckSquare}>
-                Tasks
-              </NavLink>
               <NavLink to="/users" icon={Users}>
                 Users
+              </NavLink>
+              <NavLink to="/tasks" icon={CheckSquare}>
+                Tasks
               </NavLink>
               <NavLink to="/task-assignment" icon={GitMerge}>
                 Task Assignment
