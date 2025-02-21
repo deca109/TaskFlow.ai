@@ -38,10 +38,10 @@ const TaskAssignment = () => {
   };
 
   const adjustDateByHours = (date, hours) => {
+    if (!date || !hours) return "";
     const baseDate = new Date(date);
-    return new Date(baseDate.getTime() + hours * 60 * 60 * 1000)
-      .toISOString()
-      .split("T")[0];
+    const newDate = new Date(baseDate.getTime() + hours * 60 * 60 * 1000);
+    return newDate.toISOString().split("T")[0];
   };
 
   const customStyles = {
@@ -211,24 +211,21 @@ const TaskAssignment = () => {
     );
     setCompletedDate(task.Completed_Date || "");
     setAssignedDate(task.Assigned_Date);
-    const hours = calculateCompletionTime(
+    setCompletionTime(task.Completion_Time || calculateCompletionTime(
       task.Assigned_Date,
       task.Completed_Date
-    );
-    setCompletionTime(hours);
+    ));
     setFeedbackScore(task.Feedback_Score || "");
   };
 
   const handleUpdate = () => {
     if (!editTaskID || !selectedEmployee) return;
 
-    const hours = calculateCompletionTime(assignedDate, completedDate);
-
     const data = {
       Employee_ID: selectedEmployee.value,
       Task_ID: editTaskID,
       Completed_Date: completedDate,
-      Completion_Time: hours,
+      Completion_Time: completionTime || calculateCompletionTime(assignedDate, completedDate),
       Feedback_Score: feedbackScore,
     };
 
@@ -296,11 +293,14 @@ const TaskAssignment = () => {
             onChange={(e) => {
               const newCompletedDate = e.target.value;
               setCompletedDate(newCompletedDate);
-              const hours = calculateCompletionTime(
-                assignedDate,
-                newCompletedDate
-              );
-              setCompletionTime(hours);
+              // Only update completion time if not manually set
+              if (!completionTime) {
+                const hours = calculateCompletionTime(
+                  assignedDate,
+                  newCompletedDate
+                );
+                setCompletionTime(hours);
+              }
             }}
             className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500"
           />
@@ -329,12 +329,17 @@ const TaskAssignment = () => {
             <span className="text-gray-600">hours</span>
           </div>
           <label className="block text-sm font-medium text-gray-700 mt-4 mb-2">
-            Feedback Score
+            Feedback Score (1-5)
           </label>
           <input
             type="number"
             value={feedbackScore}
-            onChange={(e) => setFeedbackScore(e.target.value)}
+            onChange={(e) => {
+              const value = Math.min(Math.max(parseInt(e.target.value) || 1, 1), 5);
+              setFeedbackScore(value);
+            }}
+            min="1"
+            max="5"
             className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-indigo-500"
           />
           <button
@@ -421,7 +426,7 @@ const TaskAssignment = () => {
                     Completion Time
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Feedback Score
+                    Feedback Score (1-5)
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Actions

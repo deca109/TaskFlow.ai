@@ -10,17 +10,21 @@ const LoadingSpinner = () => (
 
 const TasksPage = () => {
   const [tasks, setTasks] = useState([]);
+  const [taskHistory, setTaskHistory] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios
-      .get("http://localhost:5000/get_task")
-      .then((res) => {
-        setTasks(res.data);
+    Promise.all([
+      axios.get("http://localhost:5000/get_task"),
+      axios.get("http://localhost:5000/get_task_history")
+    ])
+      .then(([tasksRes, historyRes]) => {
+        setTasks(tasksRes.data);
+        setTaskHistory(historyRes.data);
         setLoading(false);
       })
       .catch((error) => {
-        console.error("Error fetching tasks:", error);
+        console.error("Error fetching data:", error);
         setLoading(false);
       });
   }, []);
@@ -78,6 +82,9 @@ const TasksPage = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Complexity
                   </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Is Assigned
+                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -115,6 +122,17 @@ const TasksPage = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {task.Task_Complexity}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          taskHistory.some(hist => hist.Task_ID === task.Task_ID)
+                            ? "bg-green-100 text-green-800"
+                            : "bg-red-100 text-red-800"
+                        }`}
+                      >
+                        {taskHistory.some(hist => hist.Task_ID === task.Task_ID) ? "Yes" : "No"}
+                      </span>
                     </td>
                   </tr>
                 ))}
