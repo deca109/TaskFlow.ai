@@ -352,9 +352,15 @@ def clear_employees():
 #---------------------------------------------------------------------------------------------------------------------------------------
 
 def skill_match(employee_skills, task_skills):
-    emp_skills_set = set(employee_skills.split(", "))
-    task_skills_set = set(task_skills.split(", "))
-    return len(emp_skills_set & task_skills_set) / len(task_skills_set) if task_skills_set else 0
+    emp_skills_set = set(s.strip() for s in employee_skills.split(","))
+    task_skills_set = set(s.strip() for s in task_skills.split(","))
+    matching_skills = emp_skills_set & task_skills_set
+    
+    if not matching_skills:
+        return 0
+    
+    match_score = len(matching_skills) / len(task_skills_set)
+    return max(0.1, match_score)  
 
 
 def queries_to_dataframes():
