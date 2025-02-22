@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import NewUserPage from "./NewUserPage"; 
-import { motion } from "framer-motion"; 
+import NewUserPage from "./NewUserPage";
+import { motion } from "framer-motion";
 import * as XLSX from 'xlsx';
 
 const LoadingSpinner = () => (
@@ -13,10 +13,10 @@ const LoadingSpinner = () => (
 
 const containerVariants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { 
-    opacity: 1, 
-    y: 0, 
-    transition: { duration: 0.5, when: "beforeChildren", staggerChildren: 0.1 } 
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, when: "beforeChildren", staggerChildren: 0.1 }
   }
 };
 
@@ -41,7 +41,7 @@ const UsersPage = () => {
   }, []);
 
   const handleUserAdded = async () => {
-    await fetchUsers(); 
+    await fetchUsers();
   };
 
   const handleRemove = async (userId) => {
@@ -67,10 +67,8 @@ const UsersPage = () => {
         const worksheet = workbook.Sheets[sheetName];
         const data = XLSX.utils.sheet_to_json(worksheet);
 
-
         const existingEmployees = await axios.get("http://localhost:5000/get_employee");
         const existingIds = new Set(existingEmployees.data.map(emp => emp.Employee_ID));
-
 
         const newEmployees = data.filter(emp => !existingIds.has(parseInt(emp.Employee_ID)));
 
@@ -100,6 +98,14 @@ const UsersPage = () => {
     };
 
     reader.readAsBinaryString(file);
+  };
+
+  // New helper function for coloring workload from green (low) to red (high)
+  const getWorkloadColor = (workload) => {
+    if (workload < 30) return "text-green-600";
+    if (workload < 60) return "text-yellow-600";
+    if (workload < 80) return "text-orange-600";
+    return "text-red-600";
   };
 
   if (loading) return <LoadingSpinner />;
@@ -141,13 +147,15 @@ const UsersPage = () => {
           )}
         </div>
       </div>
-      
+
       {uploadStatus && (
-        <div className={`mb-4 p-4 rounded-lg ${
-          uploadStatus.includes('Error') 
-            ? 'bg-red-100 text-red-700' 
-            : 'bg-green-100 text-green-700'
-        }`}>
+        <div
+          className={`mb-4 p-4 rounded-lg ${
+            uploadStatus.includes('Error')
+              ? 'bg-red-100 text-red-700'
+              : 'bg-green-100 text-green-700'
+          }`}
+        >
           {uploadStatus}
         </div>
       )}
@@ -229,7 +237,10 @@ const UsersPage = () => {
                     <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
                       {user.Availability} hrs
                     </td>
-                    <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">
+                    {/* Workload with color from green to red */}
+                    <td
+                      className={`px-6 py-4 text-center whitespace-nowrap text-sm font-medium ${getWorkloadColor(user.Current_Workload)}`}
+                    >
                       {user.Current_Workload} %
                     </td>
                     <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-500">

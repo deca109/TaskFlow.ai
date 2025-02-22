@@ -64,7 +64,7 @@ export default function App() {
             <h1 className="flex items-center text-xl font-bold text-gray-800">
               <img src="../public/logo.svg" alt="Logo" className="h-6 w-auto mr-2" />
               TaskFlow.ai{" "}
-              <span className="text-xs font-medium text-indigo-600 ml-1">
+              <span className="text-xs font-medium text-indigo-600 mt-[7px] ml-1">
                 v0.1
               </span>
             </h1>

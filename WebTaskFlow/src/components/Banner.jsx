@@ -29,7 +29,7 @@ const Banner = () => {
   const { logo, logoImage, title, authors, description, github, license } = bannerConfig;
 
   return (
-    <div className="bottom-0 w-full bg-white rounded-lg text-gray-800 p-3 sm:p-4 md:p-6 shadow-lg border-t border-indigo-600 radius-tl-3xl border-radius-3xl mt-4 sm:mt-6">
+    <div className="bottom-0 w-full bg-white rounded-lg text-gray-800 p-3 sm:p-4 md:p-6 shadow-lg border-t border-indigo-600 radius-tl-3xl mt-12 border-radius-3xl mt-4 sm:mt-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 md:gap-6 text-center md:text-left">
         {/* Logo and Description Section */}
         <div>
