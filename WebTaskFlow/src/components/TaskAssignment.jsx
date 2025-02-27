@@ -218,32 +218,58 @@ const TaskAssignment = () => {
 
   const handleUpdate = () => {
     if (!editTaskID || !selectedEmployee) return;
-    const data = {
-      Employee_ID: selectedEmployee.value,
-      Task_ID: editTaskID,
-      Completed_Date: completedDate,
-      Completion_Time:
-        completionTime || calculateCompletionTime(assignedDate, completedDate),
-      Feedback_Score: feedbackScore
-    };
-    axios
-      .put(`http://localhost:5000/update_task_history/${taskHistoryId}`, data)
-      .then(() => {
-        alert("Task updated successfully!");
-        setIsEditing(false);
-        setEditTaskID(null);
-        axios
-          .get("http://localhost:5000/get_task_history")
-          .then((res) => {
-            setTaskHistory(res.data);
+
+    axios.get(`http://localhost:5000/get_task/${editTaskID}`)
+      .then((taskRes) => {
+        const taskDetails = taskRes.data;
+        const estimatedHours = taskDetails.Estimated_Time || 0;
+        const workloadChange = calculateWorkloadPerWeek(estimatedHours);
+
+        const data = {
+          Employee_ID: selectedEmployee.value,
+          Task_ID: editTaskID,
+          Completed_Date: completedDate,
+          Completion_Time: completionTime || calculateCompletionTime(assignedDate, completedDate),
+          Feedback_Score: feedbackScore
+        };
+
+        const workloadPromise = completionTime 
+          ? axios.put(`http://localhost:5000/update_employee/${selectedEmployee.value}`, {
+              Current_Workload: (employeeWorkloads[selectedEmployee.value] || 0) - workloadChange
+            })
+          : Promise.resolve();
+
+        Promise.all([
+          axios.put(`http://localhost:5000/update_task_history/${taskHistoryId}`, data),
+          workloadPromise
+        ])
+          .then(() => {
+            alert("Task updated successfully!");
+            setIsEditing(false);
+            setEditTaskID(null);
+            
+            // Refresh both task history and employee workloads
+            return Promise.all([
+              axios.get("http://localhost:5000/get_task_history"),
+              axios.get("http://localhost:5000/get_employee")
+            ]);
+          })
+          .then(([taskRes, empRes]) => {
+            setTaskHistory(taskRes.data);
+            const workloads = {};
+            empRes.data.forEach(emp => {
+              workloads[emp.Employee_ID] = emp.Current_Workload || 0;
+            });
+            setEmployeeWorkloads(workloads);
           })
           .catch((error) => {
-            console.error("Error fetching task history:", error);
+            console.error("Error updating task:", error);
+            alert("Failed to update task");
           });
       })
       .catch((error) => {
-        console.error("Error updating task:", error);
-        alert("Failed to update task");
+        console.error("Error fetching task details:", error);
+        alert("Failed to fetch task details");
       });
   };
 

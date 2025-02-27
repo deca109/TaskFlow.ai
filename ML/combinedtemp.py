@@ -393,22 +393,34 @@ def prepare_dataset():
         return None, None, None
     
     match_df = pd.DataFrame(matches, columns=["Employee_ID", "Task_ID", "Skill_Match_Score"])
-    
-    # Merge with employees and tasks data
     full_data = match_df.merge(employees_df, on="Employee_ID").merge(tasks_df, on="Task_ID")
     
-    # Check if task_history_df has data before merging
-    if not task_history_df.empty and all(col in task_history_df.columns for col in ["Employee_ID", "Task_ID", "Feedback_Score"]):
+    # Convert numeric columns to float type
+    numeric_columns = [
+        "Skill_Match_Score", 
+        "Current_Workload", 
+        "Experience",
+        "Performance_Score", 
+        "Availability", 
+        "Priority",
+        "Estimated_Time", 
+        "Task_Complexity"
+    ]
+        
+    for col in numeric_columns:
+        full_data[col] = pd.to_numeric(full_data[col], errors='coerce').fillna(0).astype(float)
+    
+    # Handle Feedback_Score separately
+    if not task_history_df.empty:
         full_data = full_data.merge(
             task_history_df[["Employee_ID", "Task_ID", "Feedback_Score"]], 
             on=["Employee_ID", "Task_ID"], 
             how="left"
         )
+        full_data["Feedback_Score"] = pd.to_numeric(full_data["Feedback_Score"], errors='coerce').fillna(0).astype(float)
     else:
-        # If no task history, add Feedback_Score column with default values
-        full_data["Feedback_Score"] = 0
+        full_data["Feedback_Score"] = 0.0
 
-    # Rest of the function remains the same
     feature_weights = {
         "Skill_Match_Score": 2.0,
         "Current_Workload": -4.0,
@@ -421,13 +433,12 @@ def prepare_dataset():
         "Feedback_Score": 1.5
     }
     
-    features = ["Skill_Match_Score", "Current_Workload", "Experience", 
-               "Performance_Score", "Availability", "Priority", 
-               "Estimated_Time", "Task_Complexity", "Feedback_Score"]
-    
+    features = list(feature_weights.keys())
     X = full_data[features].copy()
+    
+    # Apply weights
     for feature, weight in feature_weights.items():
-        X[feature] *= weight
+        X[feature] = X[feature] * weight
     
     y = full_data["Employee_ID"]
     
