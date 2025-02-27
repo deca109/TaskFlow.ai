@@ -7,7 +7,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import { Home, Users, CheckSquare, GitMerge } from "lucide-react";
-import ProjectOverview from "./components/projectoverview";
+import ProjectOverview from "./components/ProjectOverview";
 import TasksPage from "./components/TasksPage";
 import NewTaskPage from "./components/NewTaskPage";
 import UsersPage from "./components/UsersPage";
@@ -96,9 +96,6 @@ export default function App() {
                   element={
                     <>
                       <ProjectOverview projectName={projectName} />
-                      <div className="fixed bottom-0 left-64 right-0">
-                        <Banner />
-                      </div>
                     </>
                   }
                 />

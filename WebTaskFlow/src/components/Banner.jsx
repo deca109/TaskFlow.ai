@@ -29,17 +29,17 @@ const Banner = () => {
   const { logo, logoImage, title, authors, description, github, license } = bannerConfig;
 
   return (
-    <div className="bottom-0 w-full bg-white rounded-lg text-gray-800 p-3 sm:p-4 md:p-6 shadow-lg border-t border-indigo-600 radius-tl-3xl mt-12 border-radius-3xl mt-4 sm:mt-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 md:gap-6 text-center md:text-left">
+    <div className="left-0 right-0 bottom-0 w-full bg-white text-gray-800 p-4 md:p-6 shadow-lg border-t border-indigo-600 h-auto min-h-[150px]">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center md:text-left">
         {/* Logo and Description Section */}
         <div>
-          <div className="flex items-center mb-1 sm:mb-2 justify-center md:justify-start">
+          <div className="flex items-center mb-2 justify-center md:justify-start">
             <img
-              src={logoImage} 
+              src={logoImage}
               alt="Logo"
-              className="h-6 sm:h-8 w-auto mr-2" 
+              className="h-8 w-auto mr-2"
             />
-            <h1 className="text-xl sm:text-2xl md:text-3xl text-indigo-600 font-bold">
+            <h1 className="text-2xl md:text-3xl text-indigo-600 font-bold">
               <a
                 href={github}
                 target="_blank"
@@ -50,24 +50,24 @@ const Banner = () => {
               </a>
             </h1>
           </div>
-          <h2 className="text-sm sm:text-base md:text-xl font-semibold">{title}</h2>
-          <p className="text-xs sm:text-sm text-gray-600 mt-1 sm:mt-2 hidden sm:block">
+          <h2 className="text-sm md:text-xl font-semibold">{title}</h2>
+          <p className="text-xs md:text-sm text-gray-600 mt-2 hidden sm:block">
             {description}
           </p>
-          <p className="mt-1 sm:mt-2 text-xs sm:text-sm font-medium">License: {license}</p>
+          <p className="mt-2 text-xs md:text-sm font-medium">License: {license}</p>
         </div>
 
         {/* Authors Section */}
         <div>
-          <h3 className="text-base sm:text-lg font-semibold">Project Authors</h3>
-          <div className="flex flex-col space-y-1 sm:space-y-2 mt-1 sm:mt-2">
+          <h3 className="text-lg font-semibold">Project Authors</h3>
+          <div className="flex flex-col space-y-2 mt-2">
             {authors.map((author, index) => (
               <a
                 key={index}
                 href={author.github}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs sm:text-sm text-indigo-600 hover:underline"
+                className="text-sm text-indigo-600 hover:underline"
               >
                 {author.name}
               </a>
@@ -77,20 +77,23 @@ const Banner = () => {
 
         {/* Links Section */}
         <div>
-          <h3 className="text-base sm:text-lg font-semibold">Links</h3>
-          <div className="flex flex-col space-y-1 sm:space-y-2 mt-1 sm:mt-2">
-            <a href={github} className="text-xs sm:text-sm text-indigo-600 hover:underline">
+          <h3 className="text-lg font-semibold">Links</h3>
+          <div className="flex flex-col space-y-2 mt-2">
+            <a
+              href={github}
+              className="text-sm text-indigo-600 hover:underline"
+            >
               Source Code
             </a>
             <a
               href={`${github}#readme`}
-              className="text-xs sm:text-sm text-indigo-600 hover:underline"
+              className="text-sm text-indigo-600 hover:underline"
             >
               Documentation
             </a>
             <a
               href={`${github}/issues/new`}
-              className="text-xs sm:text-sm text-indigo-600 hover:underline"
+              className="text-sm text-indigo-600 hover:underline"
             >
               Report an Issue
             </a>
