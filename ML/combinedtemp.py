@@ -84,8 +84,7 @@ class Tasks_History(db.Model):
 
 with app.app_context():
     db.create_all()
-    
-# Task routes
+
 @app.route("/add_task", methods=["POST"])
 def add_task():
     data = request.json
@@ -158,7 +157,6 @@ def delete_task(Task_ID):
     db.session.commit()
     return jsonify({"message": "Task deleted successfully"})
 
-# Employee routes
 @app.route("/add_employee", methods=["POST"])
 def add_employee():
     data = request.json
@@ -202,7 +200,6 @@ def get_employee():
     employees = Employee.query.all()
     return jsonify([em.to_dict() for em in employees])
 
-#function to return all unique skills
 @app.route("/get_skills", methods=["GET"])
 def get_skills():
     employees = Employee.query.all()
@@ -246,7 +243,6 @@ def delete_employee(Employee_ID):
     db.session.commit()
     return jsonify({"message": "Employee deleted successfully"})
 
-# Task History routes
 @app.route("/add_task_history", methods=["POST"])
 def add_task_history():
     data = request.json
@@ -291,7 +287,6 @@ def get_task_history_by_id(id):
     task = Tasks_History.query.get(id)
     if not task:
         return jsonify({"error": "Task history not found"}), 404
-    
     return jsonify(task.to_dict())
     
 @app.route("/update_task_history/<int:id>", methods=["PUT"])
@@ -349,8 +344,6 @@ def clear_employees():
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
 
-#---------------------------------------------------------------------------------------------------------------------------------------
-
 def skill_match(employee_skills, task_skills):
     emp_skills_set = set(s.strip() for s in employee_skills.split(","))
     task_skills_set = set(s.strip() for s in task_skills.split(","))
@@ -361,7 +354,6 @@ def skill_match(employee_skills, task_skills):
     
     match_score = len(matching_skills) / len(task_skills_set)
     return max(0.1, match_score)  
-
 
 def queries_to_dataframes():
     tasks_data = [task.to_dict() for task in Tasks.query.all()]
@@ -374,8 +366,6 @@ def queries_to_dataframes():
     
     return tasks_df, employees_df, task_history_df
 
-
-# Update the feature weights in prepare_dataset function
 def prepare_dataset():
     tasks_df, employees_df, task_history_df = queries_to_dataframes()
     
@@ -395,7 +385,6 @@ def prepare_dataset():
     match_df = pd.DataFrame(matches, columns=["Employee_ID", "Task_ID", "Skill_Match_Score"])
     full_data = match_df.merge(employees_df, on="Employee_ID").merge(tasks_df, on="Task_ID")
     
-    # Convert numeric columns to float type
     numeric_columns = [
         "Skill_Match_Score", 
         "Current_Workload", 
@@ -410,7 +399,6 @@ def prepare_dataset():
     for col in numeric_columns:
         full_data[col] = pd.to_numeric(full_data[col], errors='coerce').fillna(0).astype(float)
     
-    # Handle Feedback_Score separately
     if not task_history_df.empty:
         full_data = full_data.merge(
             task_history_df[["Employee_ID", "Task_ID", "Feedback_Score"]], 
@@ -436,14 +424,12 @@ def prepare_dataset():
     features = list(feature_weights.keys())
     X = full_data[features].copy()
     
-    # Apply weights
     for feature, weight in feature_weights.items():
         X[feature] = X[feature] * weight
     
     y = full_data["Employee_ID"]
     
     return X, y, full_data
-
 
 def train_model():
     X, y, full_data = prepare_dataset()
@@ -458,8 +444,6 @@ def train_model():
     
     return model, scaler, full_data
 
-
-# Update the recommend_employee function
 @app.route("/recommend_employee/<int:task_id>", methods=["GET"])
 def recommend_employee(task_id):
     model, scaler, full_data = train_model()
@@ -482,10 +466,9 @@ def recommend_employee(task_id):
     predictions_proba = model.predict_proba(X_candidates)
     candidates["Prediction_Score"] = [prob.max() for prob in predictions_proba]
     
-    # Update sorting criteria to consider workload and performance
     sorted_candidates = candidates.sort_values(
         by=["Prediction_Score", "Current_Workload", "Performance_Score", "Experience"],
-        ascending=[False, True, False, False]  # True for workload to prefer lower values
+        ascending=[False, True, False, False]
     )
     
     best_employee = sorted_candidates.iloc[0]
